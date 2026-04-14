@@ -34,7 +34,7 @@ async def extract_fingerprint(audioFile: UploadFile = File(...)):
             shutil.copyfileobj(audioFile.file, buffer)
             
         # Lancer l'analyse via l'IA librosa
-        result = analyze_audio(temp_filename)
+        result = await analyze_audio(temp_filename)
         
         if "error" in result:
              raise HTTPException(status_code=500, detail=result["error"])
