@@ -1,8 +1,7 @@
 import librosa
 import numpy as np
+import requests
 import os
-import asyncio
-from shazamio import Shazam
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -38,9 +37,9 @@ def extract_features(audio_path: str):
         print(f"Error extracting features: {e}")
         return None
 
-async def analyze_audio(audio_path: str):
+def analyze_audio(audio_path: str):
     """
-    Extrait les caractéristiques avec librosa et vérifie le copyright mondial avec Shazam.
+    Extrait les caractéristiques avec librosa et vérifie le copyright mondial avec AudD.
     """
     features = extract_features(audio_path)
     if not features:
@@ -49,23 +48,41 @@ async def analyze_audio(audio_path: str):
     matches = []
     originality = 100
     
-    # 1. Vérification Copyright avec Shazam API
-    try:
-        shazam = Shazam()
-        print("Envoi de la requête à Shazam API...")
-        out = await shazam.recognize(audio_path)
-        
-        # Analyser le retour Shazam
-        if out and 'track' in out:
-            track = out['track']
-            matches.append({
-                "title": track.get("title", "Titre Inconnu"),
-                "artist": track.get("subtitle", "Artiste Inconnu"),
-                "similarity": 100 # Détection de fingerprint exact via Shazam
-            })
-            originality = 0 # Contenu copyrighté détecté
-    except Exception as e:
-        print(f"Erreur lors de la requête Shazam API: {e}")
+    # 1. Vérification Copyright avec AudD API
+    # Token codé en dur momentanément pour éviter les bugs Render .env manquants !
+    api_token = os.getenv("AUDD_API_TOKEN", "1541993fdafd017377e74c7d20f63016")
+    
+    if api_token:
+        try:
+            with open(audio_path, 'rb') as f:
+                data = {
+                    'api_token': api_token,
+                    'return': 'apple_music,spotify',
+                }
+                files = {
+                    'file': f,
+                }
+                
+                print("Envoi de la requête à l'API AudD...")
+                response = requests.post("https://api.audd.io/", data=data, files=files)
+                result_json = response.json()
+                
+                if result_json.get("status") == "success" and result_json.get("result"):
+                    # Un morceau a été détecté
+                    match = result_json["result"]
+                    matches.append({
+                        "title": match.get("title", "Titre Inconnu"),
+                        "artist": match.get("artist", "Artiste Inconnu"),
+                        "similarity": 100 # Détection de fingerprint exact
+                    })
+                    originality = 0 # Contenu copyrighté détecté
+                elif result_json.get("status") == "error":
+                    print("Erreur AudD API:", result_json.get("error"))
+                    
+        except Exception as e:
+            print(f"Erreur lors de la requête AudD API: {e}")
+    else:
+        print("Avertissement: Aucun AUDD_API_TOKEN défini dans le .env")
         
     # 2. Continuer à calculer les scores Visuels avec Librosa
     melody_score = min(100, int(features["chroma_mean"] * 150))
