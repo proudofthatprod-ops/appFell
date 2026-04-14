@@ -20,7 +20,7 @@ os.makedirs("temp", exist_ok=True)
 
 @app.get("/")
 def read_root():
-    return {"status": "Backend is running!"}
+    return {"status": "Backend Shazam is running!"}
 
 @app.post("/api/analyze")
 async def extract_fingerprint(audioFile: UploadFile = File(...)):
