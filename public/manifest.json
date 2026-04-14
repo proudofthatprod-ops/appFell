@@ -1,0 +1,17 @@
+{
+  "name": "BeatDNA Audio Analyzer",
+  "short_name": "BeatDNA",
+  "description": "Analysez l'ADN de votre son, détectez les samples et vérifiez l'originalité avec notre IA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#b100e8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
