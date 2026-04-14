@@ -1,0 +1,141 @@
+.uploader-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.uploader-container h2 {
+  font-size: 24px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.uploader-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .uploader-actions { flex-direction: column; }
+}
+
+.dropzone {
+  flex: 1;
+  border: 2px dashed rgba(157, 78, 221, 0.5);
+  border-radius: 12px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(10, 10, 15, 0.4);
+}
+
+.dropzone:hover, .dropzone.active {
+  border-color: var(--neon-purple);
+  background: rgba(157, 78, 221, 0.1);
+}
+
+.dropzone .icon {
+  color: var(--primary-glow);
+  margin-bottom: 8px;
+}
+
+.dropzone .formats {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.record-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 15, 0.4);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px;
+}
+
+.btn-record {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--neon-purple));
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn-record:hover {
+  box-shadow: 0 0 15px rgba(177, 0, 232, 0.5);
+  transform: translateY(-2px);
+}
+
+.recording-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ff4757;
+  font-weight: 600;
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background-color: #ff4757;
+  border-radius: 50%;
+  animation: pulse-animation 1.5s infinite;
+}
+
+@keyframes pulse-animation {
+  0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+
+.btn-stop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff4757;
+  color: white;
+  padding: 12px 24px;
+  font-weight: 600;
+}
+
+.btn-stop:hover { background: #ff6b81; }
