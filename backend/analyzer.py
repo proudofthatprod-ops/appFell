@@ -11,7 +11,8 @@ def extract_features(audio_path: str):
     Extrait les features audios (tempo, chroma, spectral contrast) avec librosa.
     """
     try:
-        y, sr = librosa.load(audio_path, sr=22050, mono=True)
+        # On limite l'analyse aux 30 premières secondes pour éviter de planter ou de surcharger les serveurs gratuits
+        y, sr = librosa.load(audio_path, sr=22050, mono=True, duration=30)
         
         # 1. Tempo (Rythme)
         tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
