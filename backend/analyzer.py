@@ -48,41 +48,41 @@ def analyze_audio(audio_path: str):
     matches = []
     originality = 100
     
-    # 1. Vérification Copyright avec AudD API
-    # Token codé en dur momentanément pour éviter les bugs Render .env manquants !
-    api_token = os.getenv("AUDD_API_TOKEN", "1541993fdafd017377e74c7d20f63016")
+    # 1. Vérification Copyright avec Shazam API via RapidAPI
+    rapidapi_key = "ef5d157d95mshc3ab37f1d36317ep16a6f8jsnafcab3d4db10"
     
-    if api_token:
+    if rapidapi_key:
         try:
             with open(audio_path, 'rb') as f:
-                data = {
-                    'api_token': api_token,
-                    'return': 'apple_music,spotify',
+                url = "https://shazam-api6.p.rapidapi.com/shazam/recognize/"
+                headers = {
+                    "x-rapidapi-key": rapidapi_key,
+                    "x-rapidapi-host": "shazam-api6.p.rapidapi.com"
                 }
                 files = {
-                    'file': f,
+                    "upload_file": f,
                 }
                 
-                print("Envoi de la requête à l'API AudD...")
-                response = requests.post("https://api.audd.io/", data=data, files=files)
+                print("Envoi de la requête à l'API Shazam (RapidAPI)...")
+                response = requests.post(url, headers=headers, files=files)
                 result_json = response.json()
                 
-                if result_json.get("status") == "success" and result_json.get("result"):
-                    # Un morceau a été détecté
-                    match = result_json["result"]
+                # shazam-api6 retourne track dans le json si détecté
+                if "track" in result_json:
+                    track = result_json["track"]
                     matches.append({
-                        "title": match.get("title", "Titre Inconnu"),
-                        "artist": match.get("artist", "Artiste Inconnu"),
-                        "similarity": 100 # Détection de fingerprint exact
+                        "title": track.get("title", "Titre Inconnu"),
+                        "artist": track.get("subtitle", "Artiste Inconnu"),
+                        "similarity": 100 # Détection experte Shazam
                     })
                     originality = 0 # Contenu copyrighté détecté
-                elif result_json.get("status") == "error":
-                    print("Erreur AudD API:", result_json.get("error"))
+                else:
+                    print("Shazam API: Aucune correspondance ou erreur:", result_json)
                     
         except Exception as e:
-            print(f"Erreur lors de la requête AudD API: {e}")
+            print(f"Erreur lors de la requête Shazam API: {e}")
     else:
-        print("Avertissement: Aucun AUDD_API_TOKEN défini dans le .env")
+        print("Avertissement: Aucune clé Shazam API définie.")
         
     # 2. Continuer à calculer les scores Visuels avec Librosa
     melody_score = min(100, int(features["chroma_mean"] * 150))
