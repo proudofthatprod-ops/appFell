@@ -3,10 +3,15 @@ FROM python:3.10-slim
 # Create and change to the app directory.
 WORKDIR /app
 
-# Install system dependencies needed for Librosa and audio files
+# Install system dependencies needed for Librosa, audio files, and Shazamio Rust compilation
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
+    build-essential \
+    cargo \
+    rustc \
+    pkg-config \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy local code to the container image.
