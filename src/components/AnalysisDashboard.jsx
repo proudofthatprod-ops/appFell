@@ -76,13 +76,14 @@ const AnalysisDashboard = ({ status, results }) => {
             <h4>Correspondances Détectées (BDD)</h4>
             <div className="matches-list">
               {results.matches && results.matches.length > 0 ? results.matches.map((match, i) => (
-                <div key={i} className="match-item">
+                <div key={i} className={`match-item ${match.is_yours ? 'is-yours' : ''}`}>
                   <div className="match-info">
                     <span className="match-title">{match.title}</span>
                     <span className="match-artist">{match.artist}</span>
+                    {match.is_yours && <div className="yours-badge" style={{color: '#4ade80', fontSize: '11px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px'}}><CheckCircle2 size={12}/> C'est votre morceau protégé !</div>}
                   </div>
-                  <div className={`match-sim ${match.similarity > 15 ? 'warning' : 'safe'}`}>
-                    {match.similarity > 15 ? <AlertTriangle size={16} /> : <CheckCircle2 size={16} />}
+                  <div className={`match-sim ${match.is_yours ? 'safe' : (match.similarity > 15 ? 'warning' : 'safe')}`}>
+                    {match.is_yours ? <CheckCircle2 size={16} /> : (match.similarity > 15 ? <AlertTriangle size={16} /> : <CheckCircle2 size={16} />)}
                     {match.similarity}% Simil.
                   </div>
                 </div>

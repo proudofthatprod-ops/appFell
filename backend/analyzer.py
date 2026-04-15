@@ -38,7 +38,7 @@ def extract_features(audio_path: str):
         print(f"Error extracting features: {e}")
         return None
 
-async def analyze_audio(audio_path: str):
+async def analyze_audio(audio_path: str, user_artist_name: str = None):
     """
     Extrait les caractéristiques avec librosa et vérifie le copyright mondial avec Shazamio.
     """
@@ -58,12 +58,23 @@ async def analyze_audio(audio_path: str):
         # shazamio retourne 'track' dans l'objet principal si détecté
         if out and 'track' in out:
             track = out['track']
+            found_title = track.get("title", "Titre Inconnu")
+            found_artist = track.get("subtitle", "Artiste Inconnu")
+            
+            is_yours = False
+            if user_artist_name and user_artist_name.strip().lower() in found_artist.lower():
+                is_yours = True
+                print(f"Match whitelisté ! L'artiste {found_artist} correspond à {user_artist_name}")
+                # We don't penalize originality
+            else:
+                originality = 0 # Contenu copyrighté détecté
+                
             matches.append({
-                "title": track.get("title", "Titre Inconnu"),
-                "artist": track.get("subtitle", "Artiste Inconnu"),
-                "similarity": 100 # Détection experte Shazam
+                "title": found_title,
+                "artist": found_artist,
+                "similarity": 100, # Détection experte Shazam
+                "is_yours": is_yours
             })
-            originality = 0 # Contenu copyrighté détecté
         else:
             print("Shazam: Aucune correspondance.")
             

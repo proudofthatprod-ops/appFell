@@ -12,13 +12,16 @@ function App() {
   const [analysisStatus, setAnalysisStatus] = useState('idle'); // 'idle', 'uploading', 'analyzing', 'success', 'error'
   const [analysisResults, setAnalysisResults] = useState(null);
 
-  const handleAudioCapture = async (url, file) => {
+  const handleAudioCapture = async (url, file, artistName = '') => {
     setAudioBlobURL(url);
     setAnalysisStatus('uploading');
     setAnalysisResults(null);
 
     const formData = new FormData();
     formData.append('audioFile', file);
+    if (artistName.trim() !== '') {
+      formData.append('artistName', artistName.trim());
+    }
 
     try {
       setAnalysisStatus('analyzing');

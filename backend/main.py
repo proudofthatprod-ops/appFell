@@ -1,5 +1,6 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 import shutil
 import os
 import uuid
@@ -23,7 +24,10 @@ def read_root():
     return {"status": "Backend Shazam is running!"}
 
 @app.post("/api/analyze")
-async def extract_fingerprint(audioFile: UploadFile = File(...)):
+async def extract_fingerprint(
+    audioFile: UploadFile = File(...),
+    artistName: Optional[str] = Form(None)
+):
     if not audioFile.filename:
         raise HTTPException(status_code=400, detail="No file provided")
     
@@ -33,8 +37,8 @@ async def extract_fingerprint(audioFile: UploadFile = File(...)):
         with open(temp_filename, "wb") as buffer:
             shutil.copyfileobj(audioFile.file, buffer)
             
-        # Lancer l'analyse via l'IA librosa
-        result = await analyze_audio(temp_filename)
+        # Lancer l'analyse via l'IA librosa et shazamio
+        result = await analyze_audio(temp_filename, artistName)
         
         if "error" in result:
              raise HTTPException(status_code=500, detail=result["error"])

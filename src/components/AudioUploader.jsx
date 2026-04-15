@@ -7,6 +7,7 @@ const AudioUploader = ({ onAudioCapture }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [artistName, setArtistName] = useState('');
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
@@ -16,7 +17,7 @@ const AudioUploader = ({ onAudioCapture }) => {
       const file = acceptedFiles[0];
       if (file.type.startsWith('audio/')) {
         const url = URL.createObjectURL(file);
-        onAudioCapture(url, file);
+        onAudioCapture(url, file, artistName);
         setErrorMsg('');
       } else {
         setErrorMsg('Veuillez déposer un fichier audio valide (MP3, WAV, etc.)');
@@ -45,7 +46,7 @@ const AudioUploader = ({ onAudioCapture }) => {
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
-        onAudioCapture(url, audioBlob);
+        onAudioCapture(url, audioBlob, artistName);
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -94,6 +95,16 @@ const AudioUploader = ({ onAudioCapture }) => {
           <Upload size={32} className="icon" />
           <p>Glissez un fichier audio ici ou cliquez pour choisir</p>
           <span className="formats">MP3, WAV, M4A</span>
+        </div>
+        
+        <div className="artist-whitelist-input">
+          <input 
+            type="text" 
+            placeholder="Nom d'artiste (ex: Booba) pour la whitelist (Optionnel)..." 
+            value={artistName}
+            onChange={(e) => setArtistName(e.target.value)}
+            className="artist-input-field"
+          />
         </div>
 
         <div className="separator">OU</div>
